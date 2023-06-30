@@ -7,6 +7,7 @@ function renderTodos(todoArr, contentContainer) {
   // render each todo in a card
   for (let i in todoArr) {
     const todoCard = document.createElement('div')
+    todoCard.id = `card ${i}`
     const todoDetails = document.createElement('div')
     const todoBtns = document.createElement('div')
     todoDetails.classList.add('card-details')

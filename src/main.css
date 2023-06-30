@@ -152,3 +152,7 @@ button.save:active {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.card.editing {
+  opacity: 0.5;
+}

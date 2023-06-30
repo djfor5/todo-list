@@ -88,6 +88,10 @@ function resetFormInputs() {
   delete btnUpdateTodo.dataset.elementId
   btnSaveNewTodo.removeAttribute('hidden')
   btnUpdateTodo.setAttribute('hidden', true)
+  const cards = document.querySelectorAll('.card')
+  cards.forEach(card=>{
+    card.classList.remove('editing')
+  })
 }
 
 
@@ -155,6 +159,10 @@ document.addEventListener('click', (event)=>{
     const cardId = parseInt(btnEdit.id.split(' ')[1])
     if (event.target.id === btnEdit.id) {
       loadTodoDetails(cardId, todoArr)
+      const newCardId = `card ${cardId}`
+      const card = document.getElementById(newCardId)
+      card.classList.add('editing') 
+      formTodo.removeAttribute('hidden')
       btnUpdateTodo.removeAttribute('hidden')
       btnSaveNewTodo.setAttribute('hidden', true)
     }
