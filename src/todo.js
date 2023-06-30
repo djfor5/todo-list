@@ -10,8 +10,10 @@ class Todo {
     this["Priority"] = priority
     this["Notes"] = notes
     this["Todo ID"] = Todo.currentTodoId++
-    this["Date Created"] = format(new Date(), 'yyyy-MM-dd HH:mm')//:ss')
+    this["Last Modified"] = format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+    this["Date Created"] = format(new Date(), 'yyyy-MM-dd HH:mm:ss')
   }
+  updateModified() { this["Last Modified"] = format(new Date(), 'yyyy-MM-dd HH:mm:ss')}
 }
 
 

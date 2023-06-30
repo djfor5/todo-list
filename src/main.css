@@ -157,9 +157,8 @@ button.save:active {
   text-overflow: ellipsis;
 }
 
-.card-details span:nth-last-of-type(1),
-.card-details span:nth-last-of-type(2) {
-  opacity: 0.5;
+.card-details span:nth-last-child(-n+6) {
+  opacity: 0.7;
 }
 
 .card.editing {

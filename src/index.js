@@ -165,6 +165,10 @@ document.addEventListener('click', (event)=>{
       resetFormInputs()
       loadTodoDetails(cardId, todoArr)
       const newCardId = `card ${cardId}`
+      const cards = document.querySelectorAll('.card')
+      cards.forEach(card=>{
+        card.classList.remove('editing')
+      })
       const card = document.getElementById(newCardId)
       card.classList.add('editing') 
       formTodo.removeAttribute('hidden')
@@ -213,6 +217,7 @@ function updateTodoDetails(elementId) {
   todoArr[elementId]["Due Date"] = inputDueDate.value
   todoArr[elementId]["Priority"] = inputPriority.value
   todoArr[elementId]["Notes"] = inputNotes.value
+  todoArr[elementId].updateModified()
   resetFormInputs()
   renderTodos(todoArr, cards)
   setTodos(todoArr)
