@@ -1,3 +1,6 @@
+import { format, formatDistance, formatRelative, subDays } from 'date-fns'
+
+
 class Todo {
   static currentTodoId = 0
   constructor(title, description, dueDate, priority, notes) {
@@ -7,6 +10,7 @@ class Todo {
     this["Priority"] = priority
     this["Notes"] = notes
     this["Todo ID"] = Todo.currentTodoId++
+    this["Date Created"] = format(new Date(), 'yyyy-MM-dd HH:mm')//:ss')
   }
 }
 

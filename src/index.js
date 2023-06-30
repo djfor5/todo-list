@@ -3,6 +3,7 @@ import { Todo } from "./todo"
 import { getTodos, setTodos } from "./localStorage"
 import { renderTodos } from "./dom"
 
+
 let todoArr = getTodos() || []
 if (todoArr.length > 0) {
   const newCurrentId = todoArr[todoArr.length-1]["Todo ID"]
@@ -35,7 +36,7 @@ formDiv.appendChild(formTodo)
 
 const inputTitle = document.createElement('input')
 inputTitle.id = 'input-todo-title'
-inputTitle.placeholder = 'Todo title'
+inputTitle.placeholder = 'Todo title*'
 formTodo.appendChild(inputTitle)
 
 const inputDescription = document.createElement('input')
@@ -45,7 +46,8 @@ formTodo.appendChild(inputDescription)
 
 const inputDueDate = document.createElement('input')
 inputDueDate.id = 'input-todo-due-date'
-inputDueDate.placeholder = 'Todo due date'
+inputDueDate.type = 'date'
+// inputDueDate.placeholder = 'Todo due date'
 formTodo.appendChild(inputDueDate)
 
 const inputPriority = document.createElement('input')
@@ -101,6 +103,7 @@ function newTodo() {
 }
 
 function saveTodoDataToArray(todoArr) {
+  if (!inputTitle.value) return 
   const todo = new Todo(
     inputTitle.value, 
     inputDescription.value, 
@@ -145,6 +148,7 @@ btnDeleteAllTodos.addEventListener('click', ()=>{
   const isDelete = confirm('Are you sure you want to delete ALL todos?')
   if (isDelete) {
     todoArr = []
+    resetFormInputs()
     renderTodos(todoArr, cards)
     setTodos(todoArr)
     Todo.currentTodoId = 0
@@ -158,6 +162,7 @@ document.addEventListener('click', (event)=>{
   allBtnEdit.forEach(btnEdit=>{
     const cardId = parseInt(btnEdit.id.split(' ')[1])
     if (event.target.id === btnEdit.id) {
+      resetFormInputs()
       loadTodoDetails(cardId, todoArr)
       const newCardId = `card ${cardId}`
       const card = document.getElementById(newCardId)
@@ -228,6 +233,7 @@ function deleteTodo(cardId, todoArr) {
     }
   }
 
+  resetFormInputs()
   renderTodos(todoArr, cards)
   setTodos(todoArr)
 }
