@@ -60,6 +60,7 @@ formTodo.appendChild(inputNotes)
 
 const btnUpdateTodo = document.createElement('button')
 btnUpdateTodo.id = 'btn-update-todo'
+btnUpdateTodo.classList.add('edit')
 btnUpdateTodo.textContent = 'Update Todo'
 btnUpdateTodo.setAttribute('hidden', true)
 formTodo.appendChild(btnUpdateTodo)
@@ -69,6 +70,12 @@ btnSaveNewTodo.id = 'btn-save-todo'
 btnSaveNewTodo.classList.add('save')
 btnSaveNewTodo.textContent = 'Save Todo'
 formTodo.appendChild(btnSaveNewTodo)
+
+const btnCancel = document.createElement('button')
+btnCancel.id = 'btn-cancel-edit'
+btnCancel.classList.add('cancel')
+btnCancel.textContent = 'Cancel'
+formTodo.appendChild(btnCancel)
 
 
 
@@ -112,6 +119,12 @@ btnUpdateTodo.addEventListener('click', (event)=>{
   renderTodos(todoArr, cards)
 
   setTodos(todoArr) // save all todos
+})
+
+btnCancel.addEventListener('click', (event)=>{
+  event.preventDefault()
+  delete btnUpdateTodo.dataset.elementId
+  resetFormInputs()
 })
 
 
@@ -196,7 +209,7 @@ function updateTodoDetails(elementId) {
 function deleteTodo(cardId, todoArr) {
   const isDelete = confirm('Are you sure you want to delete this todo?')
   if (!isDelete) return
-  
+
   for (let i in todoArr) {
     if (todoArr[i]["Todo ID"] === cardId) {
       todoArr.splice(i,1)

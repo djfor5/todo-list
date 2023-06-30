@@ -58,6 +58,21 @@ button.new:active {
   border-color: rgb(142, 189, 189);
 }
 
+button.cancel {
+  background-color: rgb(255, 254, 175);
+  border-color: rgb(240, 238, 158);
+}
+
+button.cancel:hover {
+  background-color: rgb(243, 242, 160);
+  border-color: rgb(228, 226, 143);
+}
+
+button.cancel:active {
+  background-color: rgb(233, 231, 146);
+  border-color: rgb(218, 216, 132);
+}
+
 button.edit {
   background-color: rgb(230, 206, 155);
   border-color: rgb(204, 180, 128);
