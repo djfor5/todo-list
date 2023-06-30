@@ -1,0 +1,139 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  
+  margin: 0;
+}
+
+#content {
+  margin: 1rem 2rem;
+}
+
+#form-div {
+  margin-bottom: 1rem;
+}
+
+input {
+  line-height: 1.2rem;
+
+  border: 1px solid grey;
+  border-radius: 0.3rem;
+  box-shadow: 1px 1px 2px rgb(212, 212, 212);
+
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+button {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(190, 190, 190);
+
+  padding: 0.2rem 0.5rem;
+
+  cursor: pointer;
+}
+
+.card-buttons button {
+  font-size: 0.8rem;
+}
+
+button.new {
+  background-color: rgb(195, 231, 231);
+  border-color: rgb(173, 216, 216);
+}
+
+button.new:hover {
+  background-color: rgb(182, 223, 223);
+  border-color: rgb(158, 204, 204);
+}
+
+button.new:active {
+  background-color: rgb(167, 212, 212);
+  border-color: rgb(142, 189, 189);
+}
+
+button.edit {
+  background-color: rgb(230, 206, 155);
+  border-color: rgb(204, 180, 128);
+}
+
+button.edit:hover {
+  background-color: rgb(218, 193, 139);
+  border-color: rgb(190, 167, 115);
+}
+
+button.edit:active {
+  background-color: rgb(207, 182, 128);
+  border-color: rgb(175, 153, 103);
+}
+
+button.delete {
+  background-color: rgb(231, 177, 177);
+  border-color: rgb(204, 144, 144);
+}
+
+button.delete:hover {
+  background-color: rgb(219, 161, 161);
+  border-color: rgb(189, 130, 130);
+}
+
+button.delete:active {
+  background-color: rgb(209, 149, 149);
+  border-color: rgb(177, 117, 117);
+}
+
+button.save {
+  background-color: rgb(177, 231, 177);
+  border-color: rgb(146, 209, 146);
+}
+
+button.save:hover {
+  background-color: rgb(159, 216, 159);
+  border-color: rgb(134, 197, 134);
+}
+
+button.save:active {
+  background-color: rgb(148, 207, 148);
+  border-color: rgb(123, 185, 123);
+}
+
+#cards {
+  display: grid;
+  grid-template-columns: repeat( auto-fill, minmax(250px, auto) );
+  gap: 0.5rem;
+}
+
+.card {
+  font-size: 0.8rem;
+  background-color: rgb(248, 248, 248);
+  box-shadow: 1px 1px 2px rgb(212, 212, 212);
+
+  border: 1px solid rgb(179, 179, 179);
+  border-radius: 0.3rem;
+
+  padding: 0.5rem;
+}
+
+.card-details {
+  margin-bottom: 0.5rem;
+
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 1rem;
+}
+
+.card-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-details span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
