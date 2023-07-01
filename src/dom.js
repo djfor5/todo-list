@@ -1,3 +1,6 @@
+import { format, formatDistance, formatRelative, subDays } from 'date-fns'
+
+
 function renderTodos(todoArr, contentContainer) {
   // remove all contents from container
   while (contentContainer.firstChild) {
@@ -7,7 +10,6 @@ function renderTodos(todoArr, contentContainer) {
   // render each todo in a card
   for (let i in todoArr) {
     const todoCard = document.createElement('div')
-    // todoCard.id = `card ${i}`
     todoCard.id = `card ${todoArr[i]["Todo ID"]}`
     const todoDetails = document.createElement('div')
     const todoBtns = document.createElement('div')
@@ -21,6 +23,15 @@ function renderTodos(todoArr, contentContainer) {
       spanValue.textContent = value
       todoDetails.appendChild(spanKey)
       todoDetails.appendChild(spanValue)
+      const today = format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+      if (key === 'Due Date') {
+        spanValue.style.fontWeight = 'bold'
+        if (value<today) {
+          spanValue.style.color = 'red'
+        } else {
+          spanValue.style.color = 'green'
+        }
+      }
     }
     const btnEditTodo = document.createElement('button')
     btnEditTodo.textContent = "Edit"
