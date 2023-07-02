@@ -272,7 +272,7 @@ btnUpdateProject.addEventListener('click', (event)=>{
   event.preventDefault()
   const elementProjectId = btnUpdateProject.dataset.elementProjectId
   updateProjectDetails(elementProjectId)
-  renderProjects(projectArr, cards)
+  renderProjects(projectArr, cardsProjectDiv)
 
   setProjects(projectArr) // save all projects
 })
@@ -518,25 +518,19 @@ function deleteProject(cardProjectId, projectArr) {
 
 
 function filterTodosByProject(selectedProjectArr, todoArr) {
-  // console.log(selectedProjectArr);
   if (!selectedProjectArr.length) return todoArr
 
   let todoArrFiltered = []
   for (let element of selectedProjectArr) {
     for (let i in todoArr) {
-      if (todoArr[i]["Project"].includes(element)) {
+      if (todoArr[i]["Project"] === element) {
         todoArrFiltered.push(todoArr[i])
       }
     }
   }
-  // console.log(todoArrFiltered);
-  // return todoArrFiltered
-  return todoArr
+  return todoArrFiltered
 }
-const arr = ['d']
-const abc = filterTodosByProject(arr, todoArr)
-// console.log(abc)
-// renderTodos(filterTodosByProject(['d'], todoArr),cardsTodoDiv)
+
 
 document.addEventListener('click', (event)=>{
   const allBtnSelectProject = document.querySelectorAll('.select-project')
@@ -562,19 +556,17 @@ document.addEventListener('click', (event)=>{
           if (element["Project ID"] === cardProjectId) {
             const selectedProjectName = element["Project Title"]
             if (selectedProjectArr.includes(selectedProjectName)) {
-              selectedProjectArr.splice(selectedProjectArr.indexOf(selectedProjectName))
+              selectedProjectArr.splice(selectedProjectArr.indexOf(selectedProjectName), 1)
               console.log(selectedProjectArr);
             }
           }
         }
       }
-
-
+      renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
     }
   })
 })
 
-filterTodosByProject(['er', 'e'], todoArr)
 
 function getSelectedProjectArr() {
   const allSelectedProjects = document.querySelectorAll('.selected-project')

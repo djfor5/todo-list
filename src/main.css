@@ -15,9 +15,22 @@ body {
   margin: 1rem 2rem;
 }
 
+input {
+  display: block;
+}
+
+#project-todo-div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+}
+
 #form-todo-div,
 #form-project-div {
   margin-bottom: 1rem;
+
+  display: flex;
+  flex-direction: column;
 }
 
 input {
@@ -136,6 +149,10 @@ button.save:active {
   border-color: rgb(123, 185, 123);
 }
 
+button.selected-project {
+  opacity: 0.3;
+}
+
 #cards-todo,
 #cards-project {
   display: grid;
@@ -146,7 +163,8 @@ button.save:active {
 .card-todo,
 .card-project {
   font-size: 0.8rem;
-  background-color: rgb(248, 248, 248);
+  background: radial-gradient(rgb(240, 240, 240), rgb(255, 255, 255));
+  /* background-color: rgb(248, 248, 248); */
   box-shadow: 1px 1px 2px rgb(212, 212, 212);
 
   border: 1px solid rgb(179, 179, 179);
