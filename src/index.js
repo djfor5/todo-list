@@ -1,8 +1,25 @@
 import "./main.css"
 import { Todo } from "./todo"
-import { getTodos, setTodos } from "./localStorage"
-import { renderTodos } from "./dom"
+import { Project } from "./project"
+import { getProjects, setProjects, getTodos, setTodos } from "./localStorage"
+import { renderProjects, renderTodos } from "./dom"
 
+
+const formProjectDiv = document.getElementById('form-project-div')
+const cardsProjectDiv = document.getElementById('cards-project')
+const formTodoDiv = document.getElementById('form-todo-div')
+const cardsTodoDiv = document.getElementById('cards-todo')
+
+let selectedProjectArr = []
+
+let projectArr = getProjects() || []
+if (projectArr.length > 0) {
+  const newCurrentProjectId = projectArr[projectArr.length-1]["Project ID"]
+  Project.currentProjectId = newCurrentProjectId + 1
+} else {
+  Project.currentProjectId = 0
+}
+renderProjects(projectArr, cardsProjectDiv)
 
 let todoArr = getTodos() || []
 if (todoArr.length > 0) {
@@ -11,28 +28,31 @@ if (todoArr.length > 0) {
 } else {
   Todo.currentTodoId = 0
 }
-renderTodos(todoArr, cards)
+// renderTodos(todoArr, cardsTodoDiv)
+renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
 
-const formDiv = document.getElementById('form-div')
-const cardsDiv = document.getElementById('cards')
+
+
+//################################################################################
+// FORM FOR TODO
 
 // create form elements for creating or updating todo details
 const btnDeleteAllTodos = document.createElement('button')
 btnDeleteAllTodos.id = 'btn-delete-all-todos'
 btnDeleteAllTodos.classList.add('delete')
 btnDeleteAllTodos.textContent = 'Delete All Todos'
-formDiv.appendChild(btnDeleteAllTodos)
+formTodoDiv.appendChild(btnDeleteAllTodos)
 
 const btnNewTodo = document.createElement('button')
 btnNewTodo.id = 'btn-new-todo'
 btnNewTodo.classList.add('new')
 btnNewTodo.textContent = 'New Todo'
-formDiv.appendChild(btnNewTodo)
+formTodoDiv.appendChild(btnNewTodo)
 
 const formTodo = document.createElement('form')
 formTodo.id = 'form-todo'
 // formTodo.setAttribute('hidden', true)
-formDiv.appendChild(formTodo)
+formTodoDiv.appendChild(formTodo)
 
 const inputTitle = document.createElement('input')
 inputTitle.id = 'input-todo-title'
@@ -60,6 +80,11 @@ inputNotes.id = 'input-todo-notes'
 inputNotes.placeholder = 'Todo notes'
 formTodo.appendChild(inputNotes)
 
+const inputTodoProject = document.createElement('input')
+inputTodoProject.id = 'input-todo-project'
+inputTodoProject.placeholder = 'Todo project'
+formTodo.appendChild(inputTodoProject)
+
 const btnUpdateTodo = document.createElement('button')
 btnUpdateTodo.id = 'btn-update-todo'
 btnUpdateTodo.classList.add('edit')
@@ -80,67 +105,206 @@ btnCancel.textContent = 'Cancel'
 formTodo.appendChild(btnCancel)
 
 
+//################################################################################
+// FORM FOR PROJECT
 
-function resetFormInputs() {
+// create form elements for creating or updating project details
+const btnDeleteAllProjects = document.createElement('button')
+btnDeleteAllProjects.id = 'btn-delete-all-projects'
+btnDeleteAllProjects.classList.add('delete')
+btnDeleteAllProjects.textContent = 'Delete All Projects'
+formProjectDiv.appendChild(btnDeleteAllProjects)
+
+const btnNewProject = document.createElement('button')
+btnNewProject.id = 'btn-new-project'
+btnNewProject.classList.add('new')
+btnNewProject.textContent = 'New Project'
+formProjectDiv.appendChild(btnNewProject)
+
+const formProject = document.createElement('form')
+formProject.id = 'form-project'
+// formProject.setAttribute('hidden', true)
+formProjectDiv.appendChild(formProject)
+
+const inputProjectTitle = document.createElement('input')
+inputProjectTitle.id = 'input-project-title'
+inputProjectTitle.placeholder = 'Project title*'
+formProject.appendChild(inputProjectTitle)
+
+const inputProjectDescription = document.createElement('input')
+inputProjectDescription.id = 'input-project-description'
+inputProjectDescription.placeholder = 'Project description'
+formProject.appendChild(inputProjectDescription)
+
+const inputProjectDueDate = document.createElement('input')
+inputProjectDueDate.id = 'input-project-due-date'
+inputProjectDueDate.type = 'date'
+// inputDueDate.placeholder = 'Project due date'
+formProject.appendChild(inputProjectDueDate)
+
+const inputProjectPriority = document.createElement('input')
+inputProjectPriority.id = 'input-project-priority'
+inputProjectPriority.placeholder = 'Project priority'
+formProject.appendChild(inputProjectPriority)
+
+const inputProjectNotes = document.createElement('input')
+inputProjectNotes.id = 'input-project-notes'
+inputProjectNotes.placeholder = 'Project notes'
+formProject.appendChild(inputProjectNotes)
+
+const btnUpdateProject = document.createElement('button')
+btnUpdateProject.id = 'btn-update-project'
+btnUpdateProject.classList.add('edit')
+btnUpdateProject.textContent = 'Update Project'
+btnUpdateProject.setAttribute('hidden', true)
+formProject.appendChild(btnUpdateProject)
+
+const btnSaveNewProject = document.createElement('button')
+btnSaveNewProject.id = 'btn-save-project'
+btnSaveNewProject.classList.add('save')
+btnSaveNewProject.textContent = 'Save Project'
+formProject.appendChild(btnSaveNewProject)
+
+const btnCancelProject = document.createElement('button')
+btnCancelProject.id = 'btn-cancel-edit-project'
+btnCancelProject.classList.add('cancel')
+btnCancelProject.textContent = 'Cancel'
+formProject.appendChild(btnCancelProject)
+
+
+
+
+
+
+
+function resetTodoFormInputs() {
   inputTitle.value = ""
   inputDescription.value = ""
   inputDueDate.value = ""
   inputPriority.value = ""
   inputNotes.value = ""
+  inputTodoProject.value = ""
   delete btnUpdateTodo.dataset.elementId
   btnSaveNewTodo.removeAttribute('hidden')
   btnUpdateTodo.setAttribute('hidden', true)
-  const cards = document.querySelectorAll('.card')
+  const cards = document.querySelectorAll('.card-todo')
   cards.forEach(card=>{
-    card.classList.remove('editing')
+    card.classList.remove('editing-todo')
+  })
+}
+
+function resetProjectFormInputs() {
+  inputProjectTitle.value = ""
+  inputProjectDescription.value = ""
+  inputProjectDueDate.value = ""
+  inputProjectPriority.value = ""
+  inputProjectNotes.value = ""
+  delete btnUpdateProject.dataset.elementProjectId
+  btnSaveNewProject.removeAttribute('hidden')
+  btnUpdateProject.setAttribute('hidden', true)
+  const projectCards = document.querySelectorAll('.card-project')
+  projectCards.forEach(projectCard=>{
+    projectCard.classList.remove('editing-project')
   })
 }
 
 
 function newTodo() {
   formTodo.toggleAttribute('hidden')
-  resetFormInputs()
+  resetTodoFormInputs()
+}
+
+function newProject() {
+  formProject.toggleAttribute('hidden')
+  resetProjectFormInputs()
 }
 
 function saveTodoDataToArray(todoArr) {
+  const projects = projectArr.map(project=>project["Project Title"])
+  let todoProject
+  if (projects.includes(inputTodoProject.value)) {
+    todoProject = inputTodoProject.value
+  } else {
+    todoProject = 'Default'
+  }
   if (!inputTitle.value) return 
   const todo = new Todo(
     inputTitle.value, 
     inputDescription.value, 
     inputDueDate.value, 
     inputPriority.value, 
-    inputNotes.value
+    inputNotes.value,
+    todoProject
     )
   todoArr.push(todo)
-  resetFormInputs()
+  resetTodoFormInputs()
 }
 
+function saveProjectDataToArray(projectArr) {
+  if (!inputProjectTitle.value) return 
+  const project = new Project(
+    inputProjectTitle.value, 
+    inputProjectDescription.value, 
+    inputProjectDueDate.value, 
+    inputProjectPriority.value, 
+    inputProjectNotes.value,
+    )
+  projectArr.push(project)
+  resetProjectFormInputs()
+}
 
 btnNewTodo.addEventListener('click', newTodo)
 
+btnNewProject.addEventListener('click', newProject)
 
 btnUpdateTodo.addEventListener('click', (event)=>{
   event.preventDefault()
   const elementId = btnUpdateTodo.dataset.elementId
   updateTodoDetails(elementId)
-  renderTodos(todoArr, cards)
+  // renderTodos(todoArr, cardsTodoDiv)
+  renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
+
 
   setTodos(todoArr) // save all todos
+})
+
+btnUpdateProject.addEventListener('click', (event)=>{
+  event.preventDefault()
+  const elementProjectId = btnUpdateProject.dataset.elementProjectId
+  updateProjectDetails(elementProjectId)
+  renderProjects(projectArr, cards)
+
+  setProjects(projectArr) // save all projects
 })
 
 btnCancel.addEventListener('click', (event)=>{
   event.preventDefault()
   delete btnUpdateTodo.dataset.elementId
-  resetFormInputs()
+  resetTodoFormInputs()
+})
+
+btnCancelProject.addEventListener('click', (event)=>{
+  event.preventDefault()
+  delete btnUpdateProject.dataset.elementProjectId
+  resetProjectFormInputs()
 })
 
 
 btnSaveNewTodo.addEventListener('click', (event)=>{
   event.preventDefault()
   saveTodoDataToArray(todoArr)
-  renderTodos(todoArr, cards)
+  // renderTodos(todoArr, cardsTodoDiv)
+  renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
 
   setTodos(todoArr) // save all todos
+})
+
+btnSaveNewProject.addEventListener('click', (event)=>{
+  event.preventDefault()
+  saveProjectDataToArray(projectArr)
+  renderProjects(projectArr, cardsProjectDiv)
+
+  setProjects(projectArr) // save all projects
 })
 
 
@@ -148,10 +312,22 @@ btnDeleteAllTodos.addEventListener('click', ()=>{
   const isDelete = confirm('Are you sure you want to delete ALL todos?')
   if (isDelete) {
     todoArr = []
-    resetFormInputs()
-    renderTodos(todoArr, cards)
+    resetTodoFormInputs()
+    // renderTodos(todoArr, cardsTodoDiv)
+    renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
     setTodos(todoArr)
     Todo.currentTodoId = 0
+  }
+})
+
+btnDeleteAllProjects.addEventListener('click', ()=>{
+  const isDelete = confirm('Are you sure you want to delete ALL projects?')
+  if (isDelete) {
+    projectArr = []
+    resetProjectFormInputs()
+    renderProjects(projectArr, cardsProjectDiv)
+    setProjects(projectArr)
+    Project.currentProjectId = 0
   }
 })
 
@@ -162,18 +338,41 @@ document.addEventListener('click', (event)=>{
   allBtnEdit.forEach(btnEdit=>{
     const cardId = parseInt(btnEdit.id.split(' ')[1])
     if (event.target.id === btnEdit.id) {
-      resetFormInputs()
+      resetTodoFormInputs()
       loadTodoDetails(cardId, todoArr)
-      const newCardId = `card ${cardId}`
-      const cards = document.querySelectorAll('.card')
+      const newCardId = `card-todo ${cardId}`
+      const cards = document.querySelectorAll('.card-todo')
       cards.forEach(card=>{
-        card.classList.remove('editing')
+        card.classList.remove('editing-todo')
       })
       const card = document.getElementById(newCardId)
-      card.classList.add('editing') 
+      card.classList.add('editing-todo') 
       formTodo.removeAttribute('hidden')
       btnUpdateTodo.removeAttribute('hidden')
       btnSaveNewTodo.setAttribute('hidden', true)
+    }
+  })
+})
+
+
+// add edit function to edit button on each project card
+document.addEventListener('click', (event)=>{
+  const allBtnEditProject = document.querySelectorAll('.edit-project')
+  allBtnEditProject.forEach(btnEditProject=>{
+    const cardProjectId = parseInt(btnEditProject.id.split(' ')[1])
+    if (event.target.id === btnEditProject.id) {
+      resetProjectFormInputs()
+      loadProjectDetails(cardProjectId, projectArr)
+      const newCardProjectId = `card-project ${cardProjectId}`
+      const cardsProject = document.querySelectorAll('.card-project')
+      cardsProject.forEach(cardProject=>{
+        cardProject.classList.remove('editing-project')
+      })
+      const cardProject = document.getElementById(newCardProjectId)
+      cardProject.classList.add('editing-project') 
+      formProject.removeAttribute('hidden')
+      btnUpdateProject.removeAttribute('hidden')
+      btnSaveNewProject.setAttribute('hidden', true)
     }
   })
 })
@@ -186,7 +385,20 @@ document.addEventListener('click', (event)=>{
     const cardId = parseInt(btnDelete.id.split(' ')[1])
     if (event.target.id === btnDelete.id) {
       deleteTodo(cardId, todoArr)
-      resetFormInputs()  
+      resetTodoFormInputs()  
+    }
+  })
+})
+
+
+// add delete function to delete button on each project card
+document.addEventListener('click', (event)=>{
+  const allBtnDeleteProject = document.querySelectorAll('.delete-project')
+  allBtnDeleteProject.forEach(btnDeleteProject=>{
+    const cardProjectId = parseInt(btnDeleteProject.id.split(' ')[1])
+    if (event.target.id === btnDeleteProject.id) {
+      deleteProject(cardProjectId, projectArr)
+      resetProjectFormInputs()  
     }
   })
 })
@@ -203,10 +415,29 @@ function loadTodoDetails(cardId, todoArr) {
       inputDueDate.value = todoArr[i]["Due Date"]
       inputPriority.value = todoArr[i]["Priority"]
       inputNotes.value = todoArr[i]["Notes"]
+      inputTodoProject.value = todoArr[i]["Project"]
       break
     }
   }
   btnUpdateTodo.dataset.elementId = elementId
+}
+
+
+// load details from selected todo into input fields
+function loadProjectDetails(cardProjectId, projectArr) {
+  let elementProjectId
+  for (let i in projectArr) {
+    if (projectArr[i]["Project ID"] === cardProjectId) {
+      elementProjectId = i
+      inputProjectTitle.value = projectArr[i]["Project Title"]
+      inputProjectDescription.value = projectArr[i]["Project Description"]
+      inputProjectDueDate.value = projectArr[i]["Project Due Date"]
+      inputProjectPriority.value = projectArr[i]["Project Priority"]
+      inputProjectNotes.value = projectArr[i]["Project Notes"]
+      break
+    }
+  }
+  btnUpdateProject.dataset.elementProjectId = elementProjectId
 }
 
 
@@ -217,10 +448,31 @@ function updateTodoDetails(elementId) {
   todoArr[elementId]["Due Date"] = inputDueDate.value
   todoArr[elementId]["Priority"] = inputPriority.value
   todoArr[elementId]["Notes"] = inputNotes.value
+  const projects = projectArr.map(project=>project["Project Title"])
+  if (projects.includes(inputTodoProject.value)) {
+    todoArr[elementId]["Project"] = inputTodoProject.value
+  } else {
+    todoArr[elementId]["Project"] = 'Default'
+  }
   todoArr[elementId].updateModified()
-  resetFormInputs()
-  renderTodos(todoArr, cards)
+  resetTodoFormInputs()
+  // renderTodos(todoArr, cardsTodoDiv)
+  renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
   setTodos(todoArr)
+}
+
+
+// update projectArr with updated project details and rerender
+function updateProjectDetails(elementProjectId) {
+  projectArr[elementProjectId]["Project Title"] = inputProjectTitle.value
+  projectArr[elementProjectId]["Project Description"] = inputProjectDescription.value
+  projectArr[elementProjectId]["Project Due Date"] = inputProjectDueDate.value
+  projectArr[elementProjectId]["Project Priority"] = inputProjectPriority.value
+  projectArr[elementProjectId]["Project Notes"] = inputProjectNotes.value
+  projectArr[elementProjectId].updateModified()
+  resetProjectFormInputs()
+  renderProjects(projectArr, cardsProjectDiv)
+  setProjects(projectArr)
 }
 
 
@@ -238,7 +490,104 @@ function deleteTodo(cardId, todoArr) {
     }
   }
 
-  resetFormInputs()
-  renderTodos(todoArr, cards)
+  resetTodoFormInputs()
+  // renderTodos(todoArr, cardsTodoDiv)
+  renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
   setTodos(todoArr)
 }
+
+
+function deleteProject(cardProjectId, projectArr) {
+  const isDelete = confirm('Are you sure you want to delete this project?')
+  if (!isDelete) return
+
+  for (let i in projectArr) {
+    if (projectArr[i]["Project ID"] === cardProjectId) {
+      projectArr.splice(i,1)
+      if (!projectArr.length) {
+        Project.currentProjectId = 0
+      }
+      break
+    }
+  }
+
+  resetProjectFormInputs()
+  renderProjects(projectArr, cardsProjectDiv)
+  setProjects(projectArr)
+}
+
+
+function filterTodosByProject(selectedProjectArr, todoArr) {
+  // console.log(selectedProjectArr);
+  if (!selectedProjectArr.length) return todoArr
+
+  let todoArrFiltered = []
+  for (let element of selectedProjectArr) {
+    for (let i in todoArr) {
+      if (todoArr[i]["Project"].includes(element)) {
+        todoArrFiltered.push(todoArr[i])
+      }
+    }
+  }
+  // console.log(todoArrFiltered);
+  // return todoArrFiltered
+  return todoArr
+}
+const arr = ['d']
+const abc = filterTodosByProject(arr, todoArr)
+// console.log(abc)
+// renderTodos(filterTodosByProject(['d'], todoArr),cardsTodoDiv)
+
+document.addEventListener('click', (event)=>{
+  const allBtnSelectProject = document.querySelectorAll('.select-project')
+  allBtnSelectProject.forEach(btnSelectProject=>{
+    const cardProjectId = parseInt(btnSelectProject.id.split(' ')[1])
+
+    if (event.target.id === btnSelectProject.id) {
+
+      if (!btnSelectProject.getAttribute('class').includes('selected-project')) {
+        btnSelectProject.classList.add('selected-project')
+        for (let element of projectArr) {
+          if (element["Project ID"] === cardProjectId) {
+            const selectedProjectName = element["Project Title"]
+            if (!selectedProjectArr.includes(selectedProjectName)) {
+              selectedProjectArr.push(selectedProjectName)
+              console.log(selectedProjectArr);
+            }
+          }
+        }
+      } else {
+        btnSelectProject.classList.remove('selected-project')
+        for (let element of projectArr) {
+          if (element["Project ID"] === cardProjectId) {
+            const selectedProjectName = element["Project Title"]
+            if (selectedProjectArr.includes(selectedProjectName)) {
+              selectedProjectArr.splice(selectedProjectArr.indexOf(selectedProjectName))
+              console.log(selectedProjectArr);
+            }
+          }
+        }
+      }
+
+
+    }
+  })
+})
+
+filterTodosByProject(['er', 'e'], todoArr)
+
+function getSelectedProjectArr() {
+  const allSelectedProjects = document.querySelectorAll('.selected-project')
+  let selectedProjectArr = []
+  allSelectedProjects.forEach(project=>{
+    const cardProjectId = parseInt(project.id.split(' ')[1])
+    for (let element of projectArr) {
+      if (element["Project ID"] === cardProjectId) {
+        selectedProjectArr.push(element["Project Title"])
+      }
+    }
+  })
+  return selectedProjectArr
+}
+
+// console.log(getSelectedProjectArr())
