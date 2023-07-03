@@ -17,7 +17,11 @@ class Todo {
   updateModified() { this["Last Modified"] = format(new Date(), 'yyyy-MM-dd HH:mm:ss')}
 }
 
+function addMethodToTodo() {
+  Todo.updateModified = `function() { this["Last Modified"] = format(new Date(), 'yyyy-MM-dd HH:mm:ss')}`
+}
 
 export {
   Todo,
+  addMethodToTodo,
 }

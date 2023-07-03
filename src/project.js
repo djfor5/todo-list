@@ -13,10 +13,14 @@ class Project {
     this["Project Last Modified"] = format(new Date(), 'yyyy-MM-dd HH:mm:ss')
     this["Project Date Created"] = format(new Date(), 'yyyy-MM-dd HH:mm:ss')
   }
-  updateModified() { this["Project Last Modified"] = format(new Date(), 'yyyy-MM-dd HH:mm:ss')}
+  updateModified() { this["Project Last Modified"] = format(new Date(), 'yyyy-MM-dd HH:mm:ss') }
 }
 
+function addMethodToProject() {
+  Project.updateModified = `function() { this["Project Last Modified"] = format(new Date(), 'yyyy-MM-dd HH:mm:ss') }`
+}
 
 export {
   Project,
+  addMethodToProject,
 }

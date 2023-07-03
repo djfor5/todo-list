@@ -1,9 +1,11 @@
 import "./main.css"
-import { Todo } from "./todo"
-import { Project } from "./project"
+import { Todo, addMethodToTodo } from "./todo"
+import { Project, addMethodToProject } from "./project"
 import { getProjects, setProjects, getTodos, setTodos } from "./localStorage"
 import { renderProjects, renderTodos } from "./dom"
 
+addMethodToProject()
+addMethodToTodo()
 
 const formProjectDiv = document.getElementById('form-project-div')
 const cardsProjectDiv = document.getElementById('cards-project')
