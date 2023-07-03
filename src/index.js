@@ -10,7 +10,7 @@ const cardsProjectDiv = document.getElementById('cards-project')
 const formTodoDiv = document.getElementById('form-todo-div')
 const cardsTodoDiv = document.getElementById('cards-todo')
 
-let selectedProjectArr = []
+let selectedProjectSet = new Set()
 
 let projectArr = getProjects() || []
 if (projectArr.length > 0) {
@@ -28,8 +28,7 @@ if (todoArr.length > 0) {
 } else {
   Todo.currentTodoId = 0
 }
-// renderTodos(todoArr, cardsTodoDiv)
-renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
+renderTodos(filterTodosByProject(selectedProjectSet, todoArr), cardsTodoDiv)
 
 
 
@@ -261,8 +260,7 @@ btnUpdateTodo.addEventListener('click', (event)=>{
   event.preventDefault()
   const elementId = btnUpdateTodo.dataset.elementId
   updateTodoDetails(elementId)
-  // renderTodos(todoArr, cardsTodoDiv)
-  renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
+  renderTodos(filterTodosByProject(selectedProjectSet, todoArr), cardsTodoDiv)
 
 
   setTodos(todoArr) // save all todos
@@ -293,8 +291,7 @@ btnCancelProject.addEventListener('click', (event)=>{
 btnSaveNewTodo.addEventListener('click', (event)=>{
   event.preventDefault()
   saveTodoDataToArray(todoArr)
-  // renderTodos(todoArr, cardsTodoDiv)
-  renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
+  renderTodos(filterTodosByProject(selectedProjectSet, todoArr), cardsTodoDiv)
 
   setTodos(todoArr) // save all todos
 })
@@ -313,8 +310,7 @@ btnDeleteAllTodos.addEventListener('click', ()=>{
   if (isDelete) {
     todoArr = []
     resetTodoFormInputs()
-    // renderTodos(todoArr, cardsTodoDiv)
-    renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
+    renderTodos(filterTodosByProject(selectedProjectSet, todoArr), cardsTodoDiv)
     setTodos(todoArr)
     Todo.currentTodoId = 0
   }
@@ -328,6 +324,12 @@ btnDeleteAllProjects.addEventListener('click', ()=>{
     renderProjects(projectArr, cardsProjectDiv)
     setProjects(projectArr)
     Project.currentProjectId = 0
+
+    for (let i in todoArr) {
+      todoArr[i]["Project"] = 'Default'
+    }
+    renderTodos(filterTodosByProject(selectedProjectSet, todoArr), cardsTodoDiv)
+
   }
 })
 
@@ -456,14 +458,22 @@ function updateTodoDetails(elementId) {
   }
   todoArr[elementId].updateModified()
   resetTodoFormInputs()
-  // renderTodos(todoArr, cardsTodoDiv)
-  renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
+  renderTodos(filterTodosByProject(selectedProjectSet, todoArr), cardsTodoDiv)
   setTodos(todoArr)
 }
 
 
 // update projectArr with updated project details and rerender
 function updateProjectDetails(elementProjectId) {
+  selectedProjectSet.clear()//delete(projectArr[elementProjectId]["Project Title"])
+  for (let element of todoArr) {
+    if (element["Project"] === projectArr[elementProjectId]["Project Title"]) {
+      element["Project"] = inputProjectTitle.value
+    }
+  }
+  renderTodos(filterTodosByProject(selectedProjectSet, todoArr), cardsTodoDiv)
+  resetTodoFormInputs()
+
   projectArr[elementProjectId]["Project Title"] = inputProjectTitle.value
   projectArr[elementProjectId]["Project Description"] = inputProjectDescription.value
   projectArr[elementProjectId]["Project Due Date"] = inputProjectDueDate.value
@@ -491,8 +501,7 @@ function deleteTodo(cardId, todoArr) {
   }
 
   resetTodoFormInputs()
-  // renderTodos(todoArr, cardsTodoDiv)
-  renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
+  renderTodos(filterTodosByProject(selectedProjectSet, todoArr), cardsTodoDiv)
   setTodos(todoArr)
 }
 
@@ -503,6 +512,12 @@ function deleteProject(cardProjectId, projectArr) {
 
   for (let i in projectArr) {
     if (projectArr[i]["Project ID"] === cardProjectId) {
+      selectedProjectSet.clear()//delete(projectArr[elementProjectId]["Project Title"])
+      for (let j in todoArr) {
+        if (todoArr[j]["Project"] === projectArr[i]["Project Title"]) {
+          todoArr[j]["Project"] = 'Default'
+        }
+      }
       projectArr.splice(i,1)
       if (!projectArr.length) {
         Project.currentProjectId = 0
@@ -513,19 +528,18 @@ function deleteProject(cardProjectId, projectArr) {
 
   resetProjectFormInputs()
   renderProjects(projectArr, cardsProjectDiv)
+  renderTodos(filterTodosByProject(selectedProjectSet, todoArr), cardsTodoDiv)
   setProjects(projectArr)
 }
 
 
-function filterTodosByProject(selectedProjectArr, todoArr) {
-  if (!selectedProjectArr.length) return todoArr
+function filterTodosByProject(selectedProjectSet, todoArr) {
+  if (!selectedProjectSet.size) return todoArr
 
   let todoArrFiltered = []
-  for (let element of selectedProjectArr) {
-    for (let i in todoArr) {
-      if (todoArr[i]["Project"] === element) {
-        todoArrFiltered.push(todoArr[i])
-      }
+  for (let i in todoArr) {
+    if (selectedProjectSet.has(todoArr[i]["Project"])) {
+      todoArrFiltered.push(todoArr[i])
     }
   }
   return todoArrFiltered
@@ -544,10 +558,8 @@ document.addEventListener('click', (event)=>{
         for (let element of projectArr) {
           if (element["Project ID"] === cardProjectId) {
             const selectedProjectName = element["Project Title"]
-            if (!selectedProjectArr.includes(selectedProjectName)) {
-              selectedProjectArr.push(selectedProjectName)
-              console.log(selectedProjectArr);
-            }
+            selectedProjectSet.add(selectedProjectName)
+            // console.log(selectedProjectSet);
           }
         }
       } else {
@@ -555,31 +567,12 @@ document.addEventListener('click', (event)=>{
         for (let element of projectArr) {
           if (element["Project ID"] === cardProjectId) {
             const selectedProjectName = element["Project Title"]
-            if (selectedProjectArr.includes(selectedProjectName)) {
-              selectedProjectArr.splice(selectedProjectArr.indexOf(selectedProjectName), 1)
-              console.log(selectedProjectArr);
-            }
+            selectedProjectSet.delete(selectedProjectName)
+            // console.log(selectedProjectSet);
           }
         }
       }
-      renderTodos(filterTodosByProject(selectedProjectArr, todoArr), cardsTodoDiv)
+      renderTodos(filterTodosByProject(selectedProjectSet, todoArr), cardsTodoDiv)
     }
   })
 })
-
-
-function getSelectedProjectArr() {
-  const allSelectedProjects = document.querySelectorAll('.selected-project')
-  let selectedProjectArr = []
-  allSelectedProjects.forEach(project=>{
-    const cardProjectId = parseInt(project.id.split(' ')[1])
-    for (let element of projectArr) {
-      if (element["Project ID"] === cardProjectId) {
-        selectedProjectArr.push(element["Project Title"])
-      }
-    }
-  })
-  return selectedProjectArr
-}
-
-// console.log(getSelectedProjectArr())
