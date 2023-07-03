@@ -1,8 +1,9 @@
 import "./main.css"
-import { Todo, addMethodToTodo } from "./todo"
-import { Project, addMethodToProject } from "./project"
-import { getProjects, setProjects, getTodos, setTodos } from "./localStorage"
-import { renderProjects, renderTodos } from "./dom"
+import { Todo, addMethodToTodo } from "./todo.js"
+import { Project, addMethodToProject } from "./project.js"
+import { getProjects, setProjects, getTodos, setTodos } from "./localStorage.js"
+import { renderProjects, renderTodos } from "./dom.js"
+import { filterTodosByProject } from "./miscellaneous.js"
 
 addMethodToProject()
 addMethodToTodo()
@@ -532,19 +533,6 @@ function deleteProject(cardProjectId, projectArr) {
   renderProjects(projectArr, cardsProjectDiv)
   renderTodos(filterTodosByProject(selectedProjectSet, todoArr), cardsTodoDiv)
   setProjects(projectArr)
-}
-
-
-function filterTodosByProject(selectedProjectSet, todoArr) {
-  if (!selectedProjectSet.size) return todoArr
-
-  let todoArrFiltered = []
-  for (let i in todoArr) {
-    if (selectedProjectSet.has(todoArr[i]["Project"])) {
-      todoArrFiltered.push(todoArr[i])
-    }
-  }
-  return todoArrFiltered
 }
 
 
