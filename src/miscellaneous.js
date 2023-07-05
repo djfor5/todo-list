@@ -1,16 +1,15 @@
-function filterTodosByProject(selectedProjectSet, todoArr) {
-  if (!selectedProjectSet.size) return todoArr
+export default function filterTodosByProject(selectedProjectSet, todoArr) {
+  if (!selectedProjectSet.size) return todoArr;
 
-  let todoArrFiltered = []
-  for (let i in todoArr) {
-    if (selectedProjectSet.has(todoArr[i]["Project"])) {
-      todoArrFiltered.push(todoArr[i])
+  const todoArrFiltered = [];
+  for (let i = 0, todoArrLength = todoArr.length; i < todoArrLength; i++) {
+    if (selectedProjectSet.has(todoArr[i].Project)) {
+      todoArrFiltered.push(todoArr[i]);
     }
   }
-  return todoArrFiltered
+  return todoArrFiltered;
 }
 
-
-export {
-  filterTodosByProject,
-}
+// export {
+//   filterTodosByProject,
+// };
