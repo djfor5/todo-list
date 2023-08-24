@@ -9,8 +9,9 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack --watch",
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js",
+    "build-watch": "webpack --watch",
+    "lint": "eslint ./"
   },
   "devDependencies": {
     "@babel/core": "^7.22.6",

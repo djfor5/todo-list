@@ -12,7 +12,7 @@ module.exports = {
       template: './src/template.html',
     }),
   ],
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   output: {
     filename: '[name].[contenthash].bundle.js',
     path: path.resolve(__dirname, 'dist'),
