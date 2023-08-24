@@ -2,7 +2,6 @@
   "name": "todo-list",
   "description": "The Odin Project - Todo List Project",
   "version": "1.0.0",
-  "main": "webpack.config.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
