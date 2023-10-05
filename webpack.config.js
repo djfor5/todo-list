@@ -27,6 +27,9 @@ module.exports = {
       {
         test: /\.(png|svg|ico|jpg|jpeg|gif|webp)$/i,
         type: "asset/resource",
+        generator: {
+          filename: "images/[hash][ext][query]",
+        },
       },
       {
         test: /\.(?:js|mjs|cjs)$/,
@@ -46,6 +49,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: "Caching",
       template: "./src/template.html",
+      favicon: "./src/assets/favicon.svg",
     }),
   ],
 };
